@@ -3,11 +3,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>ru.makarov</groupId>
-  <artifactId>hv01</artifactId>
+  <artifactId>hw01</artifactId>
   <version>1.0-SNAPSHOT</version>
+
   <packaging>jar</packaging>
 
-  <name>hv01</name>
+  <name>hw01</name>
   <url>http://maven.apache.org</url>
 
   <properties>

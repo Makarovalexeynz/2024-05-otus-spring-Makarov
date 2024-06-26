@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import ru.makarov.config.AppProperties;
 import ru.makarov.exceptions.QuestionReadException;
 
+import java.nio.file.Files;
+
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -16,11 +18,16 @@ public class CsvQuestionDaoTest {
     }
 
     @Test
+    public void nullFileNameShouldThrowExeption(){
+        CsvQuestionDao dao = new CsvQuestionDao(new AppProperties(null));
+        assertThrows(NullPointerException.class, dao::findAll);
+    }
+
+    @Test
     public void rightFileName(){
         CsvQuestionDao dao = new CsvQuestionDao(new AppProperties("question.csv"));
         assertDoesNotThrow(dao::findAll);
     }
 
-
-
 }
+

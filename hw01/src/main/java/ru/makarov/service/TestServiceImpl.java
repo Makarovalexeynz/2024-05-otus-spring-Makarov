@@ -22,10 +22,6 @@ public class TestServiceImpl implements TestService {
         ioService.printFormattedLine("Please answer the questions below%n");
         List<Question> questionList; // добавил
         questionList = questionDao.findAll();
-        if (CollectionUtils.isEmpty(questionList)) {
-            //some log here
-            return;
-        }
 
         questionList.forEach(question -> ioService.printLine(QuestionUtil.formatQuestion(question)));
     }
