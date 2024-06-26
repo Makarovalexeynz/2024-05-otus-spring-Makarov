@@ -1,11 +1,11 @@
 package ru.makarov.util;
 
-import org.springframework.util.CollectionUtils;
 import ru.makarov.domain.Question;
 
 public class QuestionUtil {
     private QuestionUtil() {
     }
+
     public static String formatQuestion(Question question) {
 
         var result = new StringBuilder(String.format("%s:\n", question.text()));
