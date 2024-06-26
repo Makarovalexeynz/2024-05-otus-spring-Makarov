@@ -9,6 +9,7 @@ public class StreamsIOService implements IOService {
 
         this.printStream = printStream;
     }
+
     @Override
     public void printLine(String s) {
         printStream.println(s);
