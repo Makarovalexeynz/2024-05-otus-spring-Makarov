@@ -24,8 +24,8 @@ public class CsvQuestionDao implements QuestionDao {
         String fileName = fileNameProvider.getTestFileName();
         Objects.requireNonNull(fileName, "fileName can't be null.");
         List<QuestionDto> questionDtos;
-        try (InputStream is = getClass().getClassLoader().getResourceAsStream(fileName)) {
-            Objects.requireNonNull(is, "is can't be null.");
+        try (InputStream is = Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(fileName) ,
+                "is can't be null"))  {
             questionDtos = new CsvToBeanBuilder<QuestionDto>(new InputStreamReader(is))
                     .withMappingStrategy(getMappingStrategy())
                     .withSeparator(';')
