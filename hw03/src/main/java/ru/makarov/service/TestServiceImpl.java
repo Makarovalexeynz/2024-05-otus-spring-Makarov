@@ -22,7 +22,7 @@ public class TestServiceImpl implements TestService {
     @Override
     public TestResult executeTestFor(Student student) {
         ioService.printLine("");
-        ioService.printFormattedLine("Please answer the questions below%n");
+        ioService.printFormattedLineLocalized("test.text");
         var questions = questionDao.findAll();
         var testResult = new TestResult(student);
 
@@ -32,7 +32,7 @@ public class TestServiceImpl implements TestService {
                     FIRST_ANSWER_NUMBER,
                     answersCount,
                     formatQuestion(question),
-                    String.format(INVALID_ANSWER_NUMBER_TEMPLATE, FIRST_ANSWER_NUMBER, answersCount)
+                    ioService.getMessage("test.invalid", FIRST_ANSWER_NUMBER, answersCount)
             );
             var answer = question.answers().get(answerIndex - 1);
             var isAnswerValid = answer.isCorrect();

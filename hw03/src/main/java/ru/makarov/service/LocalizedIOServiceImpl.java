@@ -47,8 +47,9 @@ public class LocalizedIOServiceImpl implements LocalizedIOService {
     }
 
     @Override
-    public void printFormattedLineLocalized(String code, Object... args) {
+    public String printFormattedLineLocalized(String code, Object... args) {
         ioService.printLine(localizedMessagesService.getMessage(code, args));
+        return code;
     }
 
     @Override

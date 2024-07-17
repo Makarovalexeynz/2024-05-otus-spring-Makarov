@@ -1,6 +1,7 @@
 package ru.makarov.service;
 
 
-public interface TestRunnerService {
+public interface TestRunnerService  {
+
     void run();
 }
