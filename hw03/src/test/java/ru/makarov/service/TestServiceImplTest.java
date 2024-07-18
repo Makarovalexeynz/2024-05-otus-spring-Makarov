@@ -58,8 +58,7 @@ public class TestServiceImplTest {
 
         for (var question : questions) {
             BDDMockito.given(ioService.readIntForRangeWithPrompt(
-                    1, questions.size(), formatQuestion(question), String.format(INVALID_ANSWER_NUMBER_TEMPLATE,
-                            FIRST_ANSWER_NUMBER, 2)
+                    1, 2, formatQuestion(question), ioService.getMessage("The answer is incorrect. The answer should be a number from %s to %s",1,2)
             )).willReturn(1);
         }
 
@@ -69,8 +68,8 @@ public class TestServiceImplTest {
         // Assert
         verify(questionDao, times(1)).findAll();
         verify(ioService, times(1)).printLine("");
-        verify(ioService, times(1)).printFormattedLine("Please answer the questions below%n");
-        verify(ioService, times(2)).readIntForRangeWithPrompt(anyInt(), anyInt(), anyString(), anyString());
+        verify(ioService, times(1)).printFormattedLineLocalized("test.text");
+        verify(ioService, times(0)).readIntForRangeWithPrompt(anyInt(), anyInt(), anyString(), anyString());
 
         assertThat(testResult.getStudent()).isEqualTo(student);
         assertThatList(testResult.getAnsweredQuestions()).hasSize(2);
