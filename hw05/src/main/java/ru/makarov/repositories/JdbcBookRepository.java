@@ -31,7 +31,7 @@ public class JdbcBookRepository implements BookRepository {
 public Optional<Book> findById(long id) {
     try {
         Book book = namedParameterJdbcTemplate.queryForObject(
-                "select books.id, books.title, authors.id, authors.full_name, genres.id, genres.name " +
+                    "select books.id, books.title, authors.id, authors.full_name, genres.id, genres.name " +
                         "from books " +
                         "join authors ON books.author_id = authors.id  " +
                         "join  genres ON books.genre_id = genres.id " +
@@ -48,7 +48,8 @@ public Optional<Book> findById(long id) {
     @Override
     public List<Book> findAll() {
 
-        return namedParameterJdbcTemplate.query("select books.id, books.title, authors.id, authors.full_name, genres.id, genres.name " +
+        return namedParameterJdbcTemplate.query(
+                "select books.id, books.title, authors.id, authors.full_name, genres.id, genres.name " +
                 "from books " +
                 "join authors ON books.author_id = authors.id " +
                 "join genres ON books.genre_id = genres.id"
@@ -96,7 +97,8 @@ public Optional<Book> findById(long id) {
 
     private Book update(Book book) {
         int rowsAffected = namedParameterJdbcTemplate.update(
-                "UPDATE books SET title = :title, author_id = :authorId, genre_id = :genreId WHERE id = :id",
+                "UPDATE books SET title = :title, author_id = :authorId, genre_id = :genreId " +
+                        "WHERE id = :id",
                 Map.of(
                         "title", book.getTitle(),
                         "authorId", book.getAuthor().getId(),
