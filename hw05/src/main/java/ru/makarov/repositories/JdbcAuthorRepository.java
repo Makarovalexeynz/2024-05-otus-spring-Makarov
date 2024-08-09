@@ -27,10 +27,11 @@ public class JdbcAuthorRepository implements AuthorRepository {
 
     @Override
     public Optional<Author> findById(long id) {
-        Author author = namedParameterJdbcTemplate.queryForObject(
+        List<Author> authors = namedParameterJdbcTemplate.query(
                 "select id, full_name from authors where id = :id",
                 Map.of("id", id), new AuthorRowMapper());
-        return Optional.ofNullable(author);
+        return authors.isEmpty() ? Optional.empty() : Optional.of(authors.get(0));
+
     }
 
     private static class AuthorRowMapper implements RowMapper<Author> {

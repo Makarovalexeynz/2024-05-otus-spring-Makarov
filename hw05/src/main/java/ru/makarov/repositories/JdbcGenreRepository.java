@@ -28,10 +28,10 @@ public class JdbcGenreRepository implements GenreRepository {
     @Override
     public Optional<Genre> findById(long id) {
 
-        Genre genre = namedParameterJdbcTemplate.queryForObject(
+        List<Genre> genres = namedParameterJdbcTemplate.query(
                 "select id, name from genre where id = :id",
                 Map.of("id", id), new JdbcGenreRepository.GenreRowMapper());
-        return Optional.ofNullable(genre);
+        return genres.isEmpty() ? Optional.empty() : Optional.of(genres.get(0));
     }
 
     private static class GenreRowMapper implements RowMapper<Genre> {

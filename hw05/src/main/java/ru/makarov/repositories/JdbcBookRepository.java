@@ -29,8 +29,8 @@ public class JdbcBookRepository implements BookRepository {
 
 @Override
 public Optional<Book> findById(long id) {
-    try {
-        Book book = namedParameterJdbcTemplate.queryForObject(
+
+        List<Book> books = namedParameterJdbcTemplate.query(
                     "select books.id, books.title, authors.id, authors.full_name, genres.id, genres.name " +
                         "from books " +
                         "join authors ON books.author_id = authors.id  " +
@@ -38,12 +38,8 @@ public Optional<Book> findById(long id) {
                         "where books.id=:id",
                 Map.of("id", id),
                 new BookRowMapper());
-        return Optional.of(book);
-    } catch (EmptyResultDataAccessException e) {
-        return Optional.empty();
+    return books.isEmpty() ? Optional.empty() : Optional.of(books.get(0));
     }
-}
-
 
     @Override
     public List<Book> findAll() {
@@ -69,11 +65,7 @@ public Optional<Book> findById(long id) {
         String sql = "DELETE FROM books WHERE id = :id";
         Map<String, Object> params = Collections.singletonMap("id", id);
 
-        System.out.println("Попытка удалить книгу с id = " + id); // Логирование перед запросом
-
         int rowsAffected = namedParameterJdbcTemplate.update(sql, params);
-
-        System.out.println("Затронуто строк: " + rowsAffected); // Логирование после запроса
 
         if (rowsAffected == 0) {
             throw new EmptyResultDataAccessException("Book with id " + id + " not found", 1);
@@ -118,7 +110,6 @@ public Optional<Book> findById(long id) {
 
         @Override
         public Book mapRow(ResultSet rs, int rowNum) throws SQLException {
-            Book book = new Book();
             long id = rs.getLong("id");
             String title = rs.getString("title");
             long authorId = rs.getLong("authors.id");
