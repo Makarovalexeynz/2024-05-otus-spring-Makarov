@@ -38,7 +38,7 @@ public Optional<Book> findById(long id) {
                         "where books.id=:id",
                 Map.of("id", id),
                 new BookRowMapper());
-    return books.isEmpty() ? Optional.empty() : Optional.of(books.get(0));
+    return books.stream().findFirst();
     }
 
     @Override

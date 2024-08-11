@@ -30,7 +30,7 @@ public class JdbcAuthorRepository implements AuthorRepository {
         List<Author> authors = namedParameterJdbcTemplate.query(
                 "select id, full_name from authors where id = :id",
                 Map.of("id", id), new AuthorRowMapper());
-        return authors.isEmpty() ? Optional.empty() : Optional.of(authors.get(0));
+        return authors.stream().findFirst();
 
     }
 

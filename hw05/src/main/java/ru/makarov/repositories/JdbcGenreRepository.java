@@ -31,7 +31,7 @@ public class JdbcGenreRepository implements GenreRepository {
         List<Genre> genres = namedParameterJdbcTemplate.query(
                 "select id, name from genre where id = :id",
                 Map.of("id", id), new JdbcGenreRepository.GenreRowMapper());
-        return genres.isEmpty() ? Optional.empty() : Optional.of(genres.get(0));
+        return genres.stream().findFirst();
     }
 
     private static class GenreRowMapper implements RowMapper<Genre> {
