@@ -1,16 +1,12 @@
 package ru.makarov.repositories;
 
+import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Repository;
-
 import ru.makarov.models.Book;
-
 import java.util.List;
-
 import java.util.Optional;
 
 @Repository
@@ -25,14 +21,18 @@ public class JpaBookRepository implements BookRepository {
 
     @Override
     public Optional<Book> findById(long id) {
-        return Optional.ofNullable(em.find(Book.class,id));
+        EntityGraph<?> entityGraph = em.getEntityGraph("book-author-genre");
+        TypedQuery<Book>query = em.createQuery("SELECT b FROM Book b WHERE b.id=:bookId", Book.class);
+        query.setParameter("bookId", id);
+        query.setHint("javax.persistence.fetchgraph", entityGraph);
+        return query.getResultList().stream().findFirst();
     }
 
     @Override
-    @EntityGraph("book-author-genre")
     public List<Book> findAll() {
-        TypedQuery<Book>query = em.createQuery(
-                "SELECT b FROM Book b JOIN FETCH b.author JOIN FETCH b.genre", Book.class);
+        EntityGraph<?> entityGraph = em.getEntityGraph("book-author-genre");
+        TypedQuery<Book>query = em.createQuery("SELECT b FROM Book b", Book.class);
+        query.setHint("javax.persistence.fetchgraph", entityGraph);
         return query.getResultList();
     }
 
@@ -54,7 +54,6 @@ public class JpaBookRepository implements BookRepository {
         }
     }
 
-
     private Book insert(Book book) {
         em.persist(book);
         return book;
@@ -64,5 +63,4 @@ public class JpaBookRepository implements BookRepository {
         return em.merge(book);
 
     }
-
 }

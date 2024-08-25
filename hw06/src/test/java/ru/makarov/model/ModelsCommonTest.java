@@ -1,4 +1,4 @@
-package ru.makarov;
+package ru.makarov.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
