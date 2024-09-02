@@ -18,7 +18,6 @@ public class JpaAuthorRepositoryTest {
     @Autowired
     private AuthorRepository repositoryJpa;
 
-
         @DisplayName("должен загружать список всех авторов")
         @Test
         void shouldReturnCorrectAuthorsList() {
