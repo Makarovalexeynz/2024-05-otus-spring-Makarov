@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.makarov.exceptions.EntityNotFoundException;
 import ru.makarov.models.Book;
+import ru.makarov.models.Author;
+import ru.makarov.models.Genre;
 import ru.makarov.repositories.AuthorRepository;
 import ru.makarov.repositories.BookRepository;
 import ru.makarov.repositories.GenreRepository;
@@ -37,13 +39,27 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public Book insert(String title, long authorId, long genreId) {
+
         return save(0, title, authorId, genreId);
     }
 
     @Override
     @Transactional
     public Book update(long id, String title, long authorId, long genreId) {
-        return save(id, title, authorId, genreId);
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Книга с ID " + id + " не найдена."));
+
+        Author author = authorRepository.findById(authorId)
+                .orElseThrow(() -> new IllegalArgumentException("Автор с ID " + id + " не найден."));
+
+        Genre genre = genreRepository.findById(genreId)
+                .orElseThrow(() -> new IllegalArgumentException("Жанр с ID " + id + " не найден."));
+
+        book.setTitle(title);
+        book.setAuthor(author);
+        book.setGenre(genre);
+
+        return save(book.getId(), book.getTitle(), book.getAuthor().getId(), book.getGenre().getId());
     }
 
     @Override

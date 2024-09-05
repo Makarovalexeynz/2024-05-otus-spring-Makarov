@@ -9,7 +9,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.reflections.ReflectionUtils;
 import org.reflections.Reflections;
-
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,7 +30,6 @@ class ModelsCommonTest {
 
         var reflections = new Reflections("ru.makarov.models");
         entitiesClasses = reflections.getTypesAnnotatedWith(Entity.class);
-
     }
 
     @ParameterizedTest
@@ -81,7 +79,6 @@ class ModelsCommonTest {
         assertThat(hasBidirectionalRelationshipsWithoutMappedBy)
                 .withFailMessage("Двунаправленные связи должны быть настроены с помощью mappedBy")
                 .isFalse();
-
     }
 
     private static Stream<Arguments> getEntities() {

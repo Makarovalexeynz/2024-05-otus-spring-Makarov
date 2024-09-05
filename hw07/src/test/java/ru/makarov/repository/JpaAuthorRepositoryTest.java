@@ -45,7 +45,6 @@ public class JpaAuthorRepositoryTest {
                     .map(id -> new Author(id, "Author_" + id))
                     .toList();
         }
-
 }
 
 

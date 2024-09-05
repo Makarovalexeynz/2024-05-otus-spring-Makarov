@@ -56,13 +56,12 @@ public class CommentServiceTest {
         Optional<Comment> optionalComment = commentService.findById(commentId);
         assertThat(optionalComment).isPresent();
 
-        Comment updatedComment = commentService.update(commentId, updatedText, updatedBookId);
+        Comment updatedComment = commentService.update(commentId, updatedText);
 
         assertNotNull(updatedComment);
 
         assertThat(updatedComment.getId()).isEqualTo(commentId);
         assertThat(updatedComment.getText()).isEqualTo(updatedText);
-        assertThat(updatedComment.getBook().getId()).isEqualTo(updatedBookId);
     }
 
     @DisplayName("Должен удалять комментарий")

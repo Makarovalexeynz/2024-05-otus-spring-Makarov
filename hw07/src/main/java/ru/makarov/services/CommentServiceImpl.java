@@ -28,25 +28,16 @@ public class CommentServiceImpl implements CommentService {
     public Comment insert(String text, long bookId) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new IllegalArgumentException("Книга с ID " + bookId + " не найдена."));
-        return save(0, text, book);
-    }
-
-    private Comment save(long commentId, String text, Book book) {
-        Comment comment = new Comment(commentId, text, book);
+        Comment comment = new Comment(0, text, book);
         return commentRepository.save(comment);
     }
 
     @Override
     @Transactional
-    public Comment update(long id, String text, long bookId) {
+    public Comment update(long id, String text) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Комментарий с ID " + id + " не найден."));
-
-        Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new IllegalArgumentException("Книга с ID " + bookId + " не найдена."));
-
         comment.setText(text);
-        comment.setBook(book);
 
         return commentRepository.save(comment);
     }
