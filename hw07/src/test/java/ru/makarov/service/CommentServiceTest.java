@@ -5,7 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import ru.makarov.models.Author;
+import ru.makarov.models.Book;
 import ru.makarov.models.Comment;
+import ru.makarov.models.Genre;
 import ru.makarov.services.BookServiceImpl;
 import ru.makarov.services.CommentServiceImpl;
 import java.util.Optional;
@@ -13,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
-@Import({BookServiceImpl.class, CommentServiceImpl.class })
+@Import({BookServiceImpl.class, CommentServiceImpl.class, })
 public class CommentServiceTest {
 
     @Autowired
@@ -24,13 +27,18 @@ public class CommentServiceTest {
     void shouldReturnCommentById(){
 
         Long commentId = 1L;
-        Optional<Comment> actualComment = commentService.findById(commentId);
+
+        Comment expectedComment = new Comment(commentId, "comment_1",
+                new Book(1, "BookTitle_1",
+                        new Author(1, "Author_1"),
+                        new Genre(1, "Genre_1")));
+
+        Optional <Comment> actualComment = commentService.findById(commentId);
 
         assertThat(actualComment).isPresent();
 
-        Comment comment = actualComment.get();
-        assertThat(comment)
-                .hasFieldOrPropertyWithValue("text", "Comment_1");
+        assertThat(actualComment.get())
+                .isEqualTo(expectedComment);
     }
 
     @DisplayName("Должен создавать новый комментарий")
