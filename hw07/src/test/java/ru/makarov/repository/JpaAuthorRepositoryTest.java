@@ -4,21 +4,19 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
 import static org.assertj.core.api.Assertions.assertThat;
 import ru.makarov.models.Author;
-import ru.makarov.repositories.JpaAuthorRepository;
+import ru.makarov.repositories.AuthorRepository;
 import java.util.stream.IntStream;
 
 import java.util.List;
 
 @DisplayName("Репозиторий на основе Jpa для работы с авторами")
 @DataJpaTest
-@Import(JpaAuthorRepository.class)
 public class JpaAuthorRepositoryTest {
 
     @Autowired
-    private JpaAuthorRepository repositoryJpa;
+    private AuthorRepository repositoryJpa;
 
         @DisplayName("должен загружать список всех авторов")
         @Test
@@ -47,7 +45,6 @@ public class JpaAuthorRepositoryTest {
                     .map(id -> new Author(id, "Author_" + id))
                     .toList();
         }
-
 }
 
 
