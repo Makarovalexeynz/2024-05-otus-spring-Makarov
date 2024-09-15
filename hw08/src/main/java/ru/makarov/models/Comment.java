@@ -6,13 +6,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode(of = {"id", "text", "book"})
+@EqualsAndHashCode(of = {"id"})
 @Document(collection = "comments")
 public class Comment {
 
@@ -21,5 +23,6 @@ public class Comment {
 
     private String text;
 
+    @DBRef
     private Book book;
 }

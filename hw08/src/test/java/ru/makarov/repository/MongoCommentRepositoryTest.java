@@ -13,7 +13,6 @@ import ru.makarov.models.Genre;
 import ru.makarov.repositories.CommentRepository;
 import java.util.List;
 
-
 @DisplayName("Репозиторий для работы с комментариями")
 @DataMongoTest
 public class MongoCommentRepositoryTest {
@@ -46,5 +45,4 @@ public class MongoCommentRepositoryTest {
         var expectedComment = dbComments.get(0);
         var actualComment = repository.findById(expectedComment.getId());
     }
-
 }

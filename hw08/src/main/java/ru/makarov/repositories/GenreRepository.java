@@ -2,7 +2,6 @@ package ru.makarov.repositories;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import ru.makarov.models.Genre;
-
 import java.util.List;
 import java.util.Optional;
 

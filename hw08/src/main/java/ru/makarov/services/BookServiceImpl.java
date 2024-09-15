@@ -10,7 +10,6 @@ import ru.makarov.models.Genre;
 import ru.makarov.repositories.AuthorRepository;
 import ru.makarov.repositories.BookRepository;
 import ru.makarov.repositories.GenreRepository;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -24,22 +23,24 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
 
     @Override
-    @Transactional(readOnly = true)
     public Optional<Book> findById(String id) {
         return bookRepository.findById(id);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<Book> findAll() {
         return bookRepository.findAll();
     }
 
     @Override
     @Transactional
-    public Book insert(String title, String authorId, String genreId) {
-
-        return save(null, title, authorId, genreId);
+    public Book create(String title, String authorId, String genreId) {
+        var author = authorRepository.findById(authorId)
+                .orElseThrow(() -> new EntityNotFoundException("Author with id %d not found".formatted(authorId)));
+        var genre = genreRepository.findById(genreId)
+                .orElseThrow(() -> new EntityNotFoundException("Genre with id %d not found".formatted(genreId)));
+        var book = new Book(null, title, author, genre);
+        return bookRepository.save(book);
     }
 
     @Override
@@ -58,21 +59,12 @@ public class BookServiceImpl implements BookService {
         book.setAuthor(author);
         book.setGenre(genre);
 
-        return save(book.getId(), book.getTitle(), book.getAuthor().getId(), book.getGenre().getId());
+        return bookRepository.save(book);
     }
 
     @Override
     @Transactional
     public void deleteById(String id) {
         bookRepository.deleteById(id);
-    }
-
-    private Book save(String id, String title, String authorId, String genreId) {
-        var author = authorRepository.findById(authorId)
-                .orElseThrow(() -> new EntityNotFoundException("Author with id %d not found".formatted(authorId)));
-        var genre = genreRepository.findById(genreId)
-                .orElseThrow(() -> new EntityNotFoundException("Genre with id %d not found".formatted(genreId)));
-        var book = new Book(id, title, author, genre);
-        return bookRepository.save(book);
     }
 }

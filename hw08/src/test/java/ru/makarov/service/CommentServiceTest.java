@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.makarov.models.Author;
 import ru.makarov.models.Book;
 import ru.makarov.models.Comment;
@@ -28,6 +29,7 @@ public class CommentServiceTest {
 
     @DisplayName("Должен находить комментарий по Id")
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void shouldReturnCommentById(){
 
         String commentId = "2";
@@ -47,9 +49,10 @@ public class CommentServiceTest {
 
     @DisplayName("Должен создавать новый комментарий")
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void shouldInsertNewComment(){
         String text = "New Comment";
-        String bookId = "1";
+        String bookId = "2";
 
         Comment insertedComment = commentService.insert(text, bookId);
         assertNotNull(insertedComment);
@@ -59,11 +62,12 @@ public class CommentServiceTest {
 
     @DisplayName("Должен изменять комментарий")
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void shouldUpdateComment(){
 
         String commentId = "1";
         String updatedText = "Updated text";
-        String updatedBookId = "1";
+        String updatedBookId = "2";
 
         Optional<Comment> optionalComment = commentService.findById(commentId);
         assertThat(optionalComment).isPresent();
@@ -78,6 +82,7 @@ public class CommentServiceTest {
 
     @DisplayName("Должен удалять комментарий")
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void shouldDeleteComment(){
         String commentIdToDelete = "1";
 
