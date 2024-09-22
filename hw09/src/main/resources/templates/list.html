@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List of all books</title>
+
+    <style type="text/css">
+    .books-table {
+     border-collapse: collapse;
+   }
+
+   .books-table, .books-table th, .books-table td {
+     border: 1px solid black;
+   }
+    </style>
+
+</head>
+<body>
+
+<h3>Books:</h3>
+<table class="books-table">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="book : ${books}">
+        <td th:text="${book.id}">1</td>
+        <td th:text="${book.title}">Book Title</td>
+        <td>
+            <a th:href="@{/edit/__${book.id}__}" href="editBook.html">Edit</a>
+            <br>
+            <form id="delete-form" th:method="post" th:action="@{/delete(id=${book.id})}">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+
+</table>
+<br>
+<a th:href="@{/add}" href="addBook.html">Add Book</a>
+
+</body>
+</html>
