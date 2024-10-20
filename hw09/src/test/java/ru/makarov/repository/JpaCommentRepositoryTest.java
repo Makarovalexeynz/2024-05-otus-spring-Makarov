@@ -1,7 +1,6 @@
 package ru.makarov.repository;
 
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +10,7 @@ import ru.makarov.models.Book;
 import ru.makarov.models.Comment;
 import ru.makarov.models.Genre;
 import ru.makarov.repositories.CommentRepository;
-import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 

@@ -23,7 +23,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentDto findById(long id) {
-        var findByIdComment = commentRepository.findById(id).orElseThrow(() -> new NotFoundException("Comment not found"));
+        var findByIdComment = commentRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Comment not found"));
 
         return commentMapper.toDto(findByIdComment);
     }

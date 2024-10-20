@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 @ControllerAdvice
 public class ExceptionController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ExceptionController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionController.class);
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<String> handleEntityNotFound(NotFoundException ex) {
@@ -20,7 +20,7 @@ public class ExceptionController {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception ex) {
-        logger.error("Internal server error", ex);
+        LOGGER.error("Internal server error", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new String("Internal server error"));
     }

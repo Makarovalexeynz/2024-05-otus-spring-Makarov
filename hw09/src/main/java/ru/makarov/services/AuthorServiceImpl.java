@@ -15,6 +15,7 @@ public class AuthorServiceImpl implements AuthorService {
     private final AuthorRepository authorRepository;
 
     private final AuthorMapper authorMapper;
+
     @Override
     public List<AuthorDto> findAll() {
         return authorRepository.findAll().stream().map(authorMapper::toDto).toList();
