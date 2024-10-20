@@ -5,22 +5,40 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import ru.makarov.dto.CommentDto;
+import ru.makarov.exceptions.NotFoundException;
+import ru.makarov.mappers.AuthorMapper;
+import ru.makarov.mappers.BookMapper;
+import ru.makarov.mappers.CommentMapper;
+import ru.makarov.mappers.GenreMapper;
 import ru.makarov.models.Author;
 import ru.makarov.models.Book;
 import ru.makarov.models.Comment;
 import ru.makarov.models.Genre;
 import ru.makarov.services.BookServiceImpl;
 import ru.makarov.services.CommentServiceImpl;
-import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-@Import({BookServiceImpl.class, CommentServiceImpl.class, })
+@Import({BookServiceImpl.class, CommentServiceImpl.class, BookMapper.class, AuthorMapper.class, GenreMapper.class, CommentMapper.class  })
 public class CommentServiceTest {
 
     @Autowired
     private CommentServiceImpl commentService;
+
+    @Autowired
+    private CommentMapper commentMapper;
+
+    @Autowired
+    private AuthorMapper authorMapper;
+
+    @Autowired
+    private GenreMapper genreMapper;
+
+    @Autowired
+    private BookMapper bookMapper;
+
 
     @DisplayName("Должен находить комментарий по Id")
     @Test
@@ -33,12 +51,12 @@ public class CommentServiceTest {
                         new Author(1, "Author_1"),
                         new Genre(1, "Genre_1")));
 
-        Optional <Comment> actualComment = commentService.findById(commentId);
+        CommentDto expectedCommentDto = commentMapper.toDto(expectedComment);
 
-        assertThat(actualComment).isPresent();
+        CommentDto actualCommentDto = commentService.findById(commentId);
 
-        assertThat(actualComment.get())
-                .isEqualTo(expectedComment);
+        assertThat(actualCommentDto)
+                .isEqualTo(expectedCommentDto);
     }
 
     @DisplayName("Должен создавать новый комментарий")
@@ -47,7 +65,7 @@ public class CommentServiceTest {
         String text = "New Comment";
         long bookId = 1L;
 
-        Comment insertedComment = commentService.insert(text, bookId);
+        CommentDto insertedComment = commentService.insert(text, bookId);
         assertNotNull(insertedComment);
         assertThat(insertedComment.getText()).isEqualTo(text);
         assertThat(insertedComment.getBook().getId()).isEqualTo(bookId);
@@ -61,10 +79,9 @@ public class CommentServiceTest {
         String updatedText = "Updated text";
         long updatedBookId = 1L;
 
-        Optional<Comment> optionalComment = commentService.findById(commentId);
-        assertThat(optionalComment).isPresent();
+        CommentDto optionalComment = commentService.findById(commentId);
 
-        Comment updatedComment = commentService.update(commentId, updatedText);
+        CommentDto updatedComment = commentService.update(commentId, updatedText);
 
         assertNotNull(updatedComment);
 
@@ -77,12 +94,17 @@ public class CommentServiceTest {
     void shouldDeleteComment(){
         Long commentIdToDelete = 1L;
 
-        Optional<Comment> existingComment = commentService.findById(commentIdToDelete);
-        assertThat(existingComment).isPresent();
+        CommentDto comment = commentService.findById(commentIdToDelete);
+        assertNotNull(comment, "Комментарий с ID " + commentIdToDelete + " должен существовать.");
 
         commentService.deleteById(commentIdToDelete);
+        assertThrows(NotFoundException.class, () -> commentService.findById(commentIdToDelete));
 
-        Optional<Comment> deletedComment = commentService.findById(commentIdToDelete);
-        assertThat(deletedComment).isNotPresent();
+
+
+
+
+
+
     }
 }

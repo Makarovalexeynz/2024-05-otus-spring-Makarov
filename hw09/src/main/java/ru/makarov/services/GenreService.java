@@ -1,9 +1,8 @@
 package ru.makarov.services;
 
-import ru.makarov.models.Genre;
-
+import ru.makarov.dto.GenreDto;
 import java.util.List;
 
 public interface GenreService {
-    List<Genre> findAll();
+    List<GenreDto> findAll();
 }

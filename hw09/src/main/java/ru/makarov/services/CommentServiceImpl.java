@@ -3,11 +3,13 @@ package ru.makarov.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.makarov.dto.CommentDto;
+import ru.makarov.exceptions.NotFoundException;
+import ru.makarov.mappers.CommentMapper;
 import ru.makarov.models.Book;
 import ru.makarov.models.Comment;
 import ru.makarov.repositories.BookRepository;
 import ru.makarov.repositories.CommentRepository;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -17,29 +19,32 @@ public class CommentServiceImpl implements CommentService {
 
     private final BookRepository bookRepository;
 
-    @Override
-    public Optional<Comment> findById(long id) {
+    private final CommentMapper commentMapper;
 
-        return commentRepository.findById(id);
+    @Override
+    public CommentDto findById(long id) {
+        var findByIdComment = commentRepository.findById(id).orElseThrow(() -> new NotFoundException("Comment not found"));
+
+        return commentMapper.toDto(findByIdComment);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Comment insert(String text, long bookId) {
+    public CommentDto insert(String text, long bookId) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new IllegalArgumentException("Книга с ID " + bookId + " не найдена."));
         Comment comment = new Comment(0, text, book);
-        return commentRepository.save(comment);
+        return commentMapper.toDto(commentRepository.save(comment));
     }
 
     @Override
     @Transactional
-    public Comment update(long id, String text) {
+    public CommentDto update(long id, String text) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Комментарий с ID " + id + " не найден."));
         comment.setText(text);
 
-        return commentRepository.save(comment);
+        return commentMapper.toDto(commentRepository.save(comment));
     }
 
     @Override

@@ -8,34 +8,57 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import ru.makarov.dto.AuthorDto;
+import ru.makarov.dto.BookDto;
+import ru.makarov.dto.GenreDto;
+import ru.makarov.mappers.AuthorMapper;
+import ru.makarov.mappers.BookMapper;
+import ru.makarov.mappers.GenreMapper;
 import ru.makarov.models.Author;
 import ru.makarov.models.Book;
 import ru.makarov.models.Genre;
 import ru.makarov.services.BookServiceImpl;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
-@Import({BookServiceImpl.class})
+@Import({BookServiceImpl.class, BookMapper.class, AuthorMapper.class, GenreMapper.class})
 public class BookServiceTest {
 
     @Autowired
     private BookServiceImpl bookService;
 
+    @Autowired
+    private AuthorMapper authorMapper;
+
+    @Autowired
+    private GenreMapper genreMapper;
+
+    @Autowired
+    private BookMapper bookMapper;
+
     private List<Author> dbAuthors;
 
+    private List<AuthorDto> dbAuthorsDto;
+
     private List<Genre> dbGenres;
+    private List<GenreDto> dbGenresDto;
+
+    private List<BookDto> dbBooksDto;
 
     private List<Book> dbBooks;
 
     @BeforeEach
     void setUp() {
         dbAuthors = getDbAuthors();
+        dbAuthorsDto = dbAuthors.stream().map(authorMapper::toDto).collect(Collectors.toList());
         dbGenres = getDbGenres();
+        dbGenresDto = getDbGenres().stream().map(genreMapper::toDto).collect(Collectors.toList());
         dbBooks = getDbBooks(dbAuthors, dbGenres);
+        dbBooksDto = dbBooks.stream().map(bookMapper::toDto).collect(Collectors.toList());
     }
 
     @DisplayName("должен загружать список всех книг")
@@ -43,10 +66,10 @@ public class BookServiceTest {
     void shouldReturnAllBooks() {
 
         var actualBooks = bookService.findAll();
-        var expectedBooks = dbBooks;
+        var expectedBooks = dbBooksDto;
         assertThat(actualBooks).isNotEmpty()
                 .hasSize(3)
-                .hasOnlyElementsOfType(Book.class)
+                .hasOnlyElementsOfType(BookDto.class)
                 .usingRecursiveComparison()
                 .isEqualTo(expectedBooks);
     }
@@ -57,8 +80,6 @@ public class BookServiceTest {
     void shouldReturnBookById(Book expectedBook) {
         var actualBook = bookService.findById(expectedBook.getId());
         assertThat(actualBook)
-                .isPresent()
-                .get()
                 .usingRecursiveComparison()
                 .isEqualTo(expectedBook);
     }
@@ -74,7 +95,7 @@ public class BookServiceTest {
                 new Author(authorId, "Author_" + authorId),
                 new Genre(genreId, "Genre_" + genreId));
 
-        Book insertedBook = bookService.insert(title, authorId, genreId);
+        BookDto insertedBook = bookService.insert(title, authorId, genreId);
 
         assertNotNull(insertedBook);
         assertThat(insertedBook.getId()).isGreaterThan(0);
@@ -84,9 +105,12 @@ public class BookServiceTest {
 
         assertThat(allBooks).contains(insertedBook);
 
-        Optional<Book> foundBook = bookService.findById(insertedBook.getId());
-        assertThat(foundBook).isPresent();
-        assertThat(foundBook.get()).usingRecursiveComparison().isEqualTo(insertedBook);
+        BookDto foundBook = bookService
+                .findById(insertedBook.getId());
+
+        assertThat(foundBook)
+                .usingRecursiveComparison()
+                .isEqualTo(insertedBook);
     }
 
     @DisplayName("Должен изменять книгу")
@@ -102,11 +126,13 @@ public class BookServiceTest {
                 new Author(updatedAuthor.getId(),updatedAuthor.getFullName()),
                 new Genre(updatedGenre.getId(), updatedGenre.getName()));
 
-        Book updatedBook = bookService.update(bookId, updatedTitle, updatedAuthor.getId(), updatedGenre.getId());
-        assertNotNull(updatedBook);
+        BookDto expectedBookDto = bookMapper.toDto(expectedBook);
+
+        BookDto updatedBookDto = bookService.update(bookId, updatedTitle, updatedAuthor.getId(), updatedGenre.getId());
+        assertNotNull(updatedBookDto);
         var allBook = bookService.findAll();
-        assertThat(allBook).contains(updatedBook);
-        assertThat(updatedBook).usingRecursiveComparison().isEqualTo(expectedBook);
+        assertThat(allBook).contains(updatedBookDto);
+        assertThat(updatedBookDto).usingRecursiveComparison().isEqualTo(expectedBookDto);
     }
 
     @DisplayName("Должен удалять книгу")
@@ -114,23 +140,16 @@ public class BookServiceTest {
     void shouldDeleteBook(){
         Long bookIdToDelete = 1L;
 
-        Optional<Book> existingBook = bookService.findById(bookIdToDelete);
-        assertThat(existingBook).isPresent();
-
-        Book existingBookValue = existingBook.get();
+        BookDto existingBookDto = bookService.findById(bookIdToDelete);
 
         bookService.deleteById(bookIdToDelete);
-
-        Optional<Book> deletedBook = bookService.findById(bookIdToDelete);
-        assertThat(deletedBook).isNotPresent();
-
-        assertThat(bookService.findById(bookIdToDelete)).isEmpty();
 
         var remainingBooks = bookService.findAll();
         assertThat(remainingBooks).hasSize(2);
 
-        assertThat(remainingBooks).doesNotContain(existingBookValue);
+        assertThat(remainingBooks).doesNotContain(existingBookDto);
     }
+
 
     private static List<Author> getDbAuthors() {
         return IntStream.range(1, 4).boxed()

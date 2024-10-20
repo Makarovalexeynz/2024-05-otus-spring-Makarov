@@ -7,15 +7,24 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.makarov.dto.AuthorDto;
+import ru.makarov.dto.BookDto;
+import ru.makarov.dto.GenreDto;
+import ru.makarov.mappers.AuthorMapper;
+import ru.makarov.mappers.BookMapper;
+import ru.makarov.mappers.GenreMapper;
 import ru.makarov.models.Author;
 import ru.makarov.models.Book;
 import ru.makarov.models.Genre;
 import ru.makarov.services.AuthorService;
 import ru.makarov.services.BookService;
+import ru.makarov.services.CommentService;
 import ru.makarov.services.GenreService;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.mockito.Mockito.doNothing;
@@ -25,16 +34,23 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(BookController.class)
+@Import({BookMapper.class, AuthorMapper.class, GenreMapper.class})
 public class BookControllerTest {
 
     @Autowired
     private MockMvc mvc;
 
-    @Autowired
-    private ObjectMapper mapper;
-
     @MockBean
     private BookService bookService;
+
+    @Autowired
+    private BookMapper bookMapper;
+
+    @Autowired
+    private AuthorMapper authorMapper;
+
+    @Autowired
+    private GenreMapper genreMapper;
 
     @MockBean
     private AuthorService authorService;
@@ -42,17 +58,28 @@ public class BookControllerTest {
     @MockBean
     private GenreService genreService;
 
+    @MockBean
+    private CommentService commentService;
+
     private List<Author> dbAuthors;
 
+    private List<AuthorDto> dbAuthorsDto;
+
     private List<Genre> dbGenres;
+    private List<GenreDto> dbGenresDto;
+
+    private List<BookDto> dbBooksDto;
 
     private List<Book> dbBooks;
 
     @BeforeEach
     void setUp() {
         dbAuthors = getDbAuthors();
+        dbAuthorsDto = dbAuthors.stream().map(authorMapper::toDto).collect(Collectors.toList());
         dbGenres = getDbGenres();
+        dbGenresDto = getDbGenres().stream().map(genreMapper::toDto).collect(Collectors.toList());
         dbBooks = getDbBooks(dbAuthors, dbGenres);
+        dbBooksDto = dbBooks.stream().map(bookMapper::toDto).collect(Collectors.toList());
     }
     private static List<Author> getDbAuthors() {
         return IntStream.range(1, 4).boxed()
@@ -78,16 +105,17 @@ public class BookControllerTest {
         return getDbBooks(dbAuthors, dbGenres);
     }
 
+
     @DisplayName("Должен возвращать все книги")
     @Test
     void shouldReturnListOfBooks() throws Exception {
 
-        when(bookService.findAll()).thenReturn(dbBooks);
+        when(bookService.findAll()).thenReturn(dbBooksDto);
 
         mvc.perform(get("/")
                 .accept(MediaType.TEXT_HTML))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("books", dbBooks))
+                .andExpect(model().attribute("books", dbBooksDto))
                 .andExpect(view().name("list"));
     }
 
@@ -96,20 +124,20 @@ public class BookControllerTest {
     @Test
     void shouldAddNewBook() throws Exception {
 
-            Book newBook = new Book(4L, "newTitle",
+            BookDto newBook = bookMapper.toDto(new Book(4L, "newTitle",
                     new Author(4L,"NewAuthor"),
-                    new Genre(4L,"newGenre"));
+                    new Genre(4L,"newGenre")));
 
             when(bookService.insert(newBook.getTitle(), newBook.getAuthor().getId(), newBook.getGenre().getId()))
                     .thenReturn(newBook);
 
-            mvc.perform(post("/add").flashAttr("book", newBook)).andExpect(redirectedUrl("/"));
+            mvc.perform(post("/add").flashAttr("bookDto", newBook)).andExpect(redirectedUrl("/"));
     }
 
     @DisplayName("Должен обновлять книгу")
     @Test
     void shouldEditBook() throws Exception {
-        Book editBook = new Book(1L, "newTitle", dbAuthors.get(0), dbGenres.get(0));
+        BookDto editBook = bookMapper.toDto(new Book(1L, "newTitle", dbAuthors.get(0), dbGenres.get(0)));
 
         when(bookService.update(dbBooks.get(0).getId(),
                 dbBooks.get(0).getTitle(),
@@ -117,7 +145,7 @@ public class BookControllerTest {
                 dbGenres.get(0).getId())).thenReturn(editBook);
 
         mvc.perform(post("/edit")
-                        .flashAttr("book", editBook))
+                        .flashAttr("bookDto", editBook))
                 .andExpect(redirectedUrl("/"));
     }
 

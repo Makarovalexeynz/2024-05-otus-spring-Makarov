@@ -26,6 +26,7 @@ public class JpaAuthorRepositoryTest {
             assertThat(actualAuthors)
                     .isNotNull()
                     .isNotEmpty()
+                    .usingRecursiveComparison()
                     .isEqualTo(expectedAuthors);
         }
 
@@ -33,10 +34,11 @@ public class JpaAuthorRepositoryTest {
         @Test
         void shouldReturnCorrectAuthorById() {
             var expectedAuthor = new Author(2, "Author_2");
-            var actualAuthor = repositoryJpa.findById(2);
+            var actualAuthor = repositoryJpa.findById(2L);
             assertThat(actualAuthor)
                     .isPresent()
                     .get()
+                    .usingRecursiveComparison()
                     .isEqualTo(expectedAuthor);
         }
 

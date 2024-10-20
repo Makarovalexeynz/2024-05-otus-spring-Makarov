@@ -26,6 +26,7 @@ public class JpaGenreRepositoryTest {
         assertThat(actualGenres)
                 .isNotNull()
                 .isNotEmpty()
+                .usingRecursiveComparison()
                 .isEqualTo(expectedGenres);
     }
 
@@ -33,10 +34,11 @@ public class JpaGenreRepositoryTest {
     @Test
     void shouldReturnCorrectGenreById() {
         var expectedGenre = new Genre(2, "Genre_2");
-        var actualGenre = repositoryJpa.findById(2);
+        var actualGenre = repositoryJpa.findById(2L);
         assertThat(actualGenre)
                 .isPresent()
                 .get()
+                .usingRecursiveComparison()
                 .isEqualTo(expectedGenre);
     }
 

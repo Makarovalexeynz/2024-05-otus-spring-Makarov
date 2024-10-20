@@ -16,14 +16,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.EqualsAndHashCode;
 
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "books")
-@EqualsAndHashCode(of = {"id", "title", "author", "genre"})
 @NamedEntityGraph(name = "book-author-genre",
         attributeNodes = {
                 @NamedAttributeNode("author"),
@@ -33,25 +33,17 @@ public class Book {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
-    @Setter
     private long id;
 
     @Column(name = "title", nullable = false)
-    @Getter
-    @Setter
     private String title;
 
     @ManyToOne(targetEntity = Author.class, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
-    @Getter
-    @Setter
     private Author author;
 
     @ManyToOne(targetEntity = Genre.class, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "genre_id")
-    @Getter
-    @Setter
     private Genre genre;
 
 }

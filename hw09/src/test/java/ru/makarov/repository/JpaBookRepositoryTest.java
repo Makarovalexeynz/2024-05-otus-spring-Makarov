@@ -44,6 +44,7 @@ class JpaBookRepositoryTest {
         var actualBook = repositoryJpa.findById(expectedBook.getId());
         assertThat(actualBook).isPresent()
                 .get()
+                .usingRecursiveComparison()
                 .isEqualTo(expectedBook);
     }
 
@@ -53,8 +54,11 @@ class JpaBookRepositoryTest {
         var actualBooks = repositoryJpa.findAll();
         var expectedBooks = dbBooks;
 
-        assertIterableEquals(expectedBooks, actualBooks);
-        assertThat(actualBooks.size()).isEqualTo(dbBooks.size());
+        assertThat(actualBooks)
+                .isNotNull()
+                .isNotEmpty()
+                .usingRecursiveComparison()
+                .isEqualTo(expectedBooks);
     }
 
     @DisplayName("должен сохранять новую книгу")
