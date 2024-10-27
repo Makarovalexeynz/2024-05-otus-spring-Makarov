@@ -1,6 +1,8 @@
 package ru.makarov.services;
 
+import ru.makarov.dto.BookCreateDto;
 import ru.makarov.dto.BookDto;
+import ru.makarov.dto.BookUpdateDto;
 
 import java.util.List;
 
@@ -10,9 +12,9 @@ public interface BookService {
 
     List<BookDto> findAll();
 
-    BookDto insert(String title, long authorId, long genreId);
+    BookDto insert(BookCreateDto bookCreateDto);
 
-    BookDto update(long id, String title, long authorId, long genreId);
+    BookDto update(BookUpdateDto bookUpdateDto);
 
     void deleteById(long id);
 }

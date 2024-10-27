@@ -2,7 +2,9 @@ package ru.makarov.mappers;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.makarov.dto.BookCreateDto;
 import ru.makarov.dto.BookDto;
+import ru.makarov.dto.BookUpdateDto;
 import ru.makarov.models.Book;
 
 @Component
@@ -23,5 +25,17 @@ public class BookMapper {
         return new Book(bookDto.getId(), bookDto.getTitle(),
                 authorMapper.toModel(bookDto.getAuthor()),
                 genreMapper.toModel(bookDto.getGenre()));
+    }
+
+    public BookCreateDto toCreateDto(BookDto book) {
+        return new BookCreateDto(book.getTitle(),
+                book.getAuthor().getId(),
+                book.getGenre().getId());
+    }
+
+    public BookUpdateDto toUpdateDto(BookDto book) {
+        return new BookUpdateDto(book.getId(),book.getTitle(),
+                book.getAuthor().getId(),
+                book.getGenre().getId());
     }
 }

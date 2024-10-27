@@ -95,7 +95,9 @@ public class BookServiceTest {
                 new Author(authorId, "Author_" + authorId),
                 new Genre(genreId, "Genre_" + genreId));
 
-        BookDto insertedBook = bookService.insert(title, authorId, genreId);
+        var expectedCreateBookDto = bookMapper.toCreateDto((bookMapper.toDto(expectedBook)));
+
+        BookDto insertedBook = bookService.insert(expectedCreateBookDto);
 
         assertNotNull(insertedBook);
         assertThat(insertedBook.getId()).isGreaterThan(0);
@@ -128,7 +130,9 @@ public class BookServiceTest {
 
         BookDto expectedBookDto = bookMapper.toDto(expectedBook);
 
-        BookDto updatedBookDto = bookService.update(bookId, updatedTitle, updatedAuthor.getId(), updatedGenre.getId());
+        var expectedBookUpdateDto = bookMapper.toUpdateDto(expectedBookDto);
+
+        BookDto updatedBookDto = bookService.update(expectedBookUpdateDto);
         assertNotNull(updatedBookDto);
         var allBook = bookService.findAll();
         assertThat(allBook).contains(updatedBookDto);

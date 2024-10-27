@@ -1,6 +1,5 @@
 package ru.makarov.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -124,28 +123,30 @@ public class BookControllerTest {
     @Test
     void shouldAddNewBook() throws Exception {
 
-            BookDto newBook = bookMapper.toDto(new Book(4L, "newTitle",
+            var newBookDto = bookMapper.toDto(new Book(4L, "newTitle",
                     new Author(4L,"NewAuthor"),
                     new Genre(4L,"newGenre")));
 
-            when(bookService.insert(newBook.getTitle(), newBook.getAuthor().getId(), newBook.getGenre().getId()))
-                    .thenReturn(newBook);
+            var newCreateBookDto = bookMapper.toCreateDto(newBookDto);
 
-            mvc.perform(post("/add").flashAttr("bookDto", newBook)).andExpect(redirectedUrl("/"));
+            when(bookService.insert(newCreateBookDto))
+                    .thenReturn(newBookDto);
+
+            mvc.perform(post("/add").flashAttr("bookDto", newCreateBookDto)).andExpect(redirectedUrl("/"));
     }
 
     @DisplayName("Должен обновлять книгу")
     @Test
     void shouldEditBook() throws Exception {
-        BookDto editBook = bookMapper.toDto(new Book(1L, "newTitle", dbAuthors.get(0), dbGenres.get(0)));
+        BookDto newBookDto = bookMapper.toDto(
+                new Book(1L, "newTitle", dbAuthors.get(0), dbGenres.get(0)));
 
-        when(bookService.update(dbBooks.get(0).getId(),
-                dbBooks.get(0).getTitle(),
-                dbAuthors.get(0).getId(),
-                dbGenres.get(0).getId())).thenReturn(editBook);
+        var newBookUpdateDto = bookMapper.toUpdateDto(newBookDto);
+
+        when(bookService.update(newBookUpdateDto)).thenReturn(newBookDto);
 
         mvc.perform(post("/edit")
-                        .flashAttr("bookDto", editBook))
+                        .flashAttr("bookDto", newBookUpdateDto))
                 .andExpect(redirectedUrl("/"));
     }
 

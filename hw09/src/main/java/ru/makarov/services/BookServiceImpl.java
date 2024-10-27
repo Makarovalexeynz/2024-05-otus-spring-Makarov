@@ -3,7 +3,9 @@ package ru.makarov.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.makarov.dto.BookCreateDto;
 import ru.makarov.dto.BookDto;
+import ru.makarov.dto.BookUpdateDto;
 import ru.makarov.exceptions.NotFoundException;
 import ru.makarov.mappers.BookMapper;
 import ru.makarov.models.Book;
@@ -39,18 +41,18 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public BookDto insert(String title, long authorId, long genreId) {
-        var book = save(0, title, authorId, genreId);
+    public BookDto insert(BookCreateDto bookCreateDto) {
+        var book = save(0, bookCreateDto.getTitle(), bookCreateDto.getAuthorId(), bookCreateDto.getGenreId());
 
         return bookMapper.toDto(book);
     }
 
     @Override
     @Transactional
-    public BookDto update(long id, String title, long authorId, long genreId) {
-        var book = save(id, title, authorId, genreId);
+    public BookDto update(BookUpdateDto bookUpdateDto) {
+        var book = save(bookUpdateDto.getId(),
+                bookUpdateDto.getTitle(), bookUpdateDto.getAuthorId(), bookUpdateDto.getGenreId());
         return bookMapper.toDto(book);
-
     }
 
     @Override
