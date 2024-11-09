@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Add new book</title>
+    <script>
+        const getAuthors = () => fetch('/api/v1/authors')
+        .then(response => response.json())
+        .then(authors => {
+            const authorSelect = document.getElementById('author');
+
+            // Очищаем предыдущие опции
+            authorSelect.innerHTML = '';
+
+            // Добавляем опцию "Select Author"
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.text = 'Select Author';
+            authorSelect.appendChild(defaultOption);
+
+            // Добавляем опции с авторами
+            authors.forEach(author => {
+                const option = document.createElement('option');
+                option.value = author.id;
+                option.text = author.fullName;
+                authorSelect.appendChild(option);
+            });
+        });
+
+        // Вызываем функцию для получения списка авторов
+        getAuthors();
+
+        const getGenres = () => fetch('/api/v1/genres')
+        .then(response => response.json())
+        .then(genres => {
+            const genreSelect = document.getElementById('genre');
+
+            // Очищаем предыдущие опции
+            genreSelect.innerHTML = '';
+
+            // Добавляем опцию "Select genre"
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.text = 'Select Genre';
+            genreSelect.appendChild(defaultOption);
+
+            // Добавляем опции с авторами
+            genres.forEach(genre => {
+                const option = document.createElement('option');
+                option.value = genre.id;
+                option.text = genre.name;
+                genreSelect.appendChild(option);
+            });
+        });
+
+        // Вызываем функцию для получения списка авторов
+        getGenres();
+
+        function savePerson() {
+            const title = document.getElementById('title').value;
+            const authorId = document.getElementById('author').value;
+            const genreId = document.getElementById('genre').value;
+
+            const data = {
+                title: title,
+                authorId: authorId,
+                genreId: genreId
+            };
+
+            fetch('/api/v1/books', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/';
+                } else {
+                    console.error('Error saving book');
+                    alert("Enter the data according to the rules");
+                }
+            })
+            .catch(error => {
+                console.error('Error saving book:', error);
+            });
+        }
+    </script>
+</head>
+<body>
+    <h3>Add book</h3>
+    <form id="add-form" action="/api/v1/books" th:method="post">
+        <div>
+            <label for="title">Title:</label>
+            <input id="title" name="title" type="text" placeholder="New Book Title"/>
+        </div>
+
+        <div>
+            <label for="author">Author:</label>
+            <select id="author" name="authorId">
+                <option value="">Select Author</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="genre">Genre:</label>
+            <select id="genre" name="genreId">
+                <option value="">Select Genre</option>
+            </select>
+        </div>
+
+        <div>
+            <button type="button" onclick="savePerson()" >Save</button>
+            <a href="list.html" th:href="@{/}"><button type="button">Go Back</button></a>
+        </div>
+    </form>
+</body>
+</html>
