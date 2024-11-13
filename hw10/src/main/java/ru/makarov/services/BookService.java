@@ -12,7 +12,7 @@ public interface BookService {
 
     List<BookDto> findAll();
 
-    BookDto insert(BookCreateDto bookCreateDto);
+    BookDto create(BookCreateDto bookCreateDto);
 
     BookDto update(BookUpdateDto bookUpdateDto);
 

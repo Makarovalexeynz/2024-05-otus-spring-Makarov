@@ -90,7 +90,8 @@
              $('#bookDetails').html(bookDetailsHTML);
          }).catch(error => {
              console.error('Error loading books:', error);
-             $('#bookDetails').html('<p>Ошибка загрузки информации о книге.</p>');
+             alert("Book not exist");
+             window.location.href = '/';
          });
          // Обработка отправки формы с помощью Fetch API
          $('#editBookForm').submit(function(event) {

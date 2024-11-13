@@ -35,8 +35,8 @@ public class BookController {
     }
 
     @PostMapping("/api/v1/books")
-    public BookDto insertBook(@Valid @RequestBody BookCreateDto bookCreateDto) {
-        return bookService.insert(bookCreateDto);
+    public BookDto createBook(@Valid @RequestBody BookCreateDto bookCreateDto) {
+        return bookService.create(bookCreateDto);
     }
 
     @DeleteMapping("/api/v1/books/{id}")
@@ -47,7 +47,7 @@ public class BookController {
 
 
     @PutMapping("/api/v1/books/{id}")
-    public BookDto updateBook(@Valid @RequestBody BookUpdateDto bookUpdateDto) {
+    public BookDto updateBook(@PathVariable Long id, @Valid @RequestBody BookUpdateDto bookUpdateDto) {
         return bookService.update(bookUpdateDto);
     }
 }

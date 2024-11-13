@@ -39,34 +39,38 @@ public class BookServiceImpl implements BookService {
         return bookRepository.findAll().stream().map(bookMapper::toDto).toList();
     }
 
-    @Override
     @Transactional
-    public BookDto insert(BookCreateDto bookCreateDto) {
-        var book = save(0, bookCreateDto.getTitle(), bookCreateDto.getAuthorId(), bookCreateDto.getGenreId());
-
-        return bookMapper.toDto(book);
+    @Override
+    public BookDto create(BookCreateDto bookCreateDto) {
+        var author = authorRepository.findById(bookCreateDto.getAuthorId())
+                .orElseThrow(() ->
+                        new NotFoundException("Author with id %d not found".formatted(bookCreateDto.getAuthorId())));
+        var genre = genreRepository.findById(bookCreateDto.getGenreId())
+                .orElseThrow(() ->
+                        new NotFoundException("Genre with id %d not found".formatted(bookCreateDto.getGenreId())));
+        var book = new Book(0 ,bookCreateDto.getTitle(), author, genre);
+        return bookMapper.toDto(bookRepository.save(book));
     }
 
     @Override
     @Transactional
     public BookDto update(BookUpdateDto bookUpdateDto) {
-        var book = save(bookUpdateDto.getId(),
-                bookUpdateDto.getTitle(), bookUpdateDto.getAuthorId(), bookUpdateDto.getGenreId());
-        return bookMapper.toDto(book);
+        var book = bookRepository.findById(bookUpdateDto.getId())
+                .orElseThrow(() -> new NotFoundException("Book with id %d not found".formatted(bookUpdateDto.getId())));
+        var author = authorRepository.findById(bookUpdateDto.getAuthorId())
+                .orElseThrow(() ->
+                        new NotFoundException("Author with id %d not found".formatted(bookUpdateDto.getAuthorId())));
+        var genre = genreRepository.findById(bookUpdateDto.getGenreId())
+                .orElseThrow(() ->
+                        new NotFoundException("Genre with id %d not found".formatted(bookUpdateDto.getGenreId())));
+        var updateBook = new Book(bookUpdateDto.getId(),bookUpdateDto.getTitle(), author, genre);
+        return bookMapper.toDto(bookRepository.save(updateBook));
+
     }
 
     @Override
     @Transactional
     public void deleteById(long id) {
         bookRepository.deleteById(id);
-    }
-
-    private Book save(long id, String title, long authorId, long genreId) {
-        var author = authorRepository.findById(authorId)
-                .orElseThrow(() -> new NotFoundException("Author with id %d not found".formatted(authorId)));
-        var genre = genreRepository.findById(genreId)
-                .orElseThrow(() -> new NotFoundException("Genre with id %d not found".formatted(genreId)));
-        var book = new Book(id, title, author, genre);
-        return bookRepository.save(book);
     }
 }

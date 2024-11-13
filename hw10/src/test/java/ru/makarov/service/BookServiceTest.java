@@ -97,7 +97,7 @@ public class BookServiceTest {
 
         var expectedCreateBookDto = bookMapper.toCreateDto((bookMapper.toDto(expectedBook)));
 
-        BookDto insertedBook = bookService.insert(expectedCreateBookDto);
+        BookDto insertedBook = bookService.create(expectedCreateBookDto);
 
         assertNotNull(insertedBook);
         assertThat(insertedBook.getId()).isGreaterThan(0);

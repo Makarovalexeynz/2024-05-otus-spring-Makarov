@@ -113,7 +113,7 @@ public class RestBookControllerTest {
 
         var newCreateBookDto = bookMapper.toCreateDto(newBookDto);
 
-        when(bookService.insert(newCreateBookDto))
+        when(bookService.create(newCreateBookDto))
                 .thenReturn(newBookDto);
 
         mockMvc.perform(MockMvcRequestBuilders

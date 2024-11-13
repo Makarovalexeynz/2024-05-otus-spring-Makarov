@@ -17,8 +17,8 @@ public class BookCreateDto {
     private String title;
 
     @NotNull(message = "Author must not be empty")
-    private long authorId;
+    private Long authorId;
 
     @NotNull(message = "Genre must not be empty")
-    private long genreId;
+    private Long genreId;
 }
