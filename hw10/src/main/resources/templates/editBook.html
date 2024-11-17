@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit book</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <h1>Edit book</h1>
+    <div id="bookDetails">
+
+    </div>
+
+    <form id="editBookForm">
+        <div>
+            <label for="title">title:</label>
+            <input type="text" id="title" name="title" value="">
+        </div>
+
+        <div>
+            <label for="author">author:</label>
+            <select id="author" name="author"></select>
+        </div>
+
+        <div>
+            <label for="genre">genre:</label>
+            <select id="genre" name="genre"></select>
+        </div>
+
+        <button type="submit">Save</button>
+        <a href="list.html" th:href="@{/}"><button type="button">Go Back</button></a>
+    </form>
+
+    <script>
+     $(document).ready(function() {
+         // Получение ID книги из URL
+         var bookId = parseInt(window.location.pathname.split('/').pop(), 10); // Преобразование в число
+         fetch(`/api/v1/books/${bookId}`).then(response => {
+             if (!response.ok) {
+                 throw new Error(`Ошибка HTTP: ${response.status}`);
+             }
+             return response.json();
+         }).then(book => {
+             // Заполняем поля формы данными о книге
+             $('#title').val(book.title);
+             $('#author').val(book.author.id);
+             $('#genre').val(book.genre.id);
+             // Заполняем выпадающий список авторов
+             fetch('/api/v1/authors').then(response => {
+                 if (!response.ok) {
+                     throw new Error(`Ошибка HTTP: ${response.status}`);
+                 }
+                 return response.json();
+             }).then(authors => {
+                 var authorSelect = $('#author');
+                 authors.forEach(author => {
+                     var option = $('<option>', {
+                         value: author.id,
+                         text: author.fullName
+                     });
+                     authorSelect.append(option);
+                 });
+                 authorSelect.val(book.author.id);
+             }).catch(error => {
+                 console.error('Error loading authors:', error);
+             });
+             // Заполняем выпадающий список жанров
+             fetch('/api/v1/genres').then(response => {
+                 if (!response.ok) {
+                     throw new Error(`Ошибка HTTP: ${response.status}`);
+                 }
+                 return response.json();
+             }).then(genres => {
+                 var genreSelect = $('#genre');
+                 genres.forEach(genre => {
+                     var option = $('<option>', {
+                         value: genre.id,
+                         text: genre.name
+                     });
+                     genreSelect.append(option);
+                 });
+                 genreSelect.val(book.genre.id);
+             }).catch(error => {
+                 console.error('Error loading genres:', error);
+             });
+             // Создание HTML-элементов для информации о книге
+             var bookDetailsHTML = `
+                    <h2>${book.title}</h2>
+                `;
+             // Отображение информации о книге в назначенном div
+             $('#bookDetails').html(bookDetailsHTML);
+         }).catch(error => {
+             console.error('Error loading books:', error);
+             alert("Book not exist");
+             window.location.href = '/';
+         });
+         // Обработка отправки формы с помощью Fetch API
+         $('#editBookForm').submit(function(event) {
+             event.preventDefault();
+             // Получение значений из формы
+             var title = $('#title').val();
+             var authorId = parseInt($('#author').val(), 10); // Преобразование в число
+             var genreId = parseInt($('#genre').val(), 10); // Преобразование в число
+             // Создание JSON-объекта с данными
+             var bookData = {
+                 id: bookId,
+                 title: title,
+                 authorId: authorId,
+                 genreId: genreId
+             };
+             fetch(`/api/v1/books/${bookId}`, {
+                 method: 'PUT',
+                 headers: {
+                     'Accept': 'application/json',
+                     'Content-Type': 'application/json'
+                 },
+                 body: JSON.stringify(bookData)
+             }).then(response => {
+                 if (!response.ok) {
+                     throw new Error(`Error HTTP: ${response.status}`);
+                 }
+                 return response.json();
+             }).then(data => {
+                 console.log('book updated successfully:', data);
+                 window.location.href = `/`;
+             }).catch(error => {
+                 console.error('Error update book:', error);
+                 alert("Enter the data according to the rules");
+             });
+         });
+     });
+    </script>
+</body>
+</html>
