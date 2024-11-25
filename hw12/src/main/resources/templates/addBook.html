@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Add new book</title>
+
+</head>
+<body>
+<h3>Add book form</h3>
+
+<form th:action="@{/add}" th:method="post" th:object="${bookDto}">
+    <div>
+        <label for="title">Title:</label>
+        <input type="text" th:field="*{title}" id="title" placeholder="Book title">
+        <div class="errors" th:if="${#fields.hasErrors('title')}" th:errors="*{title}" style="color: red;">Wrong title error</div>
+    </div>
+
+    <div>
+        <label for="authorId">Author:</label>
+        <select id="authorId" name="authorId">
+            <option th:each="author : ${authors}" th:object="${author}"
+                    th:value="${author.id}"
+                    th:text="${author.fullName}">
+            </option>
+        </select>
+        <div class="errors" th:if="${#fields.hasErrors('authorId')}" th:errors="*{authorId}" style="color: red;">Wrong author error</div>
+    </div>
+
+    <div >
+        <label for="genreId">Genre:</label>
+        <select id="genreId" name="genreId">
+            <option th:each="genre : ${genres}"
+                    th:value="${genre.id}"
+                    th:text="${genre.name}">
+            </option>
+        </select>
+        <div class="errors" th:if="${#fields.hasErrors('genreId')}" th:errors="*{genreId}" style="color: red;">Wrong genre error</div>
+    </div>
+    <button type="submit">Save</button>
+    </br>
+    <input type="reset" value="reset">
+</form>
+<a href="list.html" th:href="@{/}" >Back to list</a>
+</body>
+</html>
