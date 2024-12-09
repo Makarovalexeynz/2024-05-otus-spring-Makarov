@@ -16,6 +16,7 @@ import reactor.core.publisher.Mono;
 import ru.makarov.dto.BookCreateDto;
 import ru.makarov.dto.BookDto;
 import ru.makarov.dto.BookUpdateDto;
+import ru.makarov.exceptions.NotFoundException;
 import ru.makarov.mappers.AuthorMapper;
 import ru.makarov.mappers.BookMapper;
 import ru.makarov.mappers.GenreMapper;
@@ -46,7 +47,7 @@ public class BookController {
     }
 
     @GetMapping("/api/v1/books/{id}")
-    public Mono getBook(@PathVariable String id) {
+    public Mono<Book> getBook(@PathVariable String id) {
         return bookRepository.findById(id);
     }
 
@@ -61,9 +62,9 @@ public class BookController {
                                     Book book = new Book(null, bookCreateDto.getTitle(), author, genre);
                                     return bookRepository.save(book);
                                 })
-                                .onErrorMap(e -> new RuntimeException("Ошибка сохранения книги", e))
+                                .onErrorMap(e -> new NotFoundException("Ошибка сохранения книги"))
                 )
-                .onErrorMap(e -> new RuntimeException("Ошибка поиска автора или жанра", e));
+                .onErrorMap(e -> new NotFoundException("Ошибка поиска автора или жанра"));
     }
 
     @DeleteMapping("/api/v1/books/{id}")
@@ -92,10 +93,10 @@ public class BookController {
 
                             })
                             .switchIfEmpty(Mono.error
-                                    (new IllegalArgumentException(
+                                    (new NotFoundException(
                                             "Автор не найден с id: " + bookUpdateDto.getAuthorId())))
-                            .onErrorMap(ex -> new RuntimeException("Ошибка при обновлении автора книги", ex));
+                            .onErrorMap(ex -> new NotFoundException("Ошибка при обновлении автора книги"));
                 })
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("Книга не найдена с id: " + id)));
+                .switchIfEmpty(Mono.error(new NotFoundException("Книга не найдена с id: " + id)));
     }
 }
