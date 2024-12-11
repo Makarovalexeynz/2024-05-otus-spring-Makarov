@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List of all books</title>
+
+    <style type="text/css">
+        .books-table {
+            border-collapse: collapse;
+        }
+        .books-table, .books-table th, .books-table td {
+            border: 1px solid black;
+        }
+    </style>
+
+    <script>
+    const createTrBook = (book) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${book.id}</td>
+            <td>${book.title}</td>
+            <td>${book.author.fullName}</td>
+            <td>${book.genre.name}</td>
+            <td>
+                <button class="edit-button" data-book-id="${book.id}">Edit</button>
+                <br>
+                <button class="delete-button" data-book-id="${book.id}">Delete</button>
+            </td>
+        `;
+        return tr;
+    }
+
+    const getAllBooks = () => fetch('/api/v1/books')
+        .then(resp => resp.json())
+        .then(books => books.forEach(b => document.getElementById('books').appendChild(createTrBook(b))));
+
+    document.addEventListener('click', (event) => {
+        if (event.target.classList.contains('edit-button')) {
+            const bookId = event.target.dataset.bookId;
+            window.location.href = `/book/${bookId}`;
+        }
+    })
+
+    document.addEventListener('click', (event) => {
+        if (event.target.classList.contains('delete-button')) {
+            const bookId = event.target.dataset.bookId;
+            // Подтверждение  удаления
+            if (confirm(`Are you sure you want to delete book ${bookId}?`)) {
+                 // Отправка  запроса  DELETE  на  сервер
+                fetch(`/api/v1/books/${bookId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (response.ok) {
+                    // Успешное  удаление  книги
+                    // Возврат на страницу со списком книг
+                        window.location.href = '/';
+                    } else {
+                    // Обработка  ошибки  удаления
+                        console.error('Error when deleting a book');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error when deleting a book:', error);
+                });
+            }
+        }
+    });
+    </script>
+
+</head>
+
+<body onload="getAllBooks()">
+    <h3>Books:</h3>
+    <table class="books-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Author</th>
+                <th>Genre</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="books"></tbody>
+    </table>
+    <br>
+    <a th:href="@{/book}" href="addBook.html">Add Book</a>
+</body>
+</html>
