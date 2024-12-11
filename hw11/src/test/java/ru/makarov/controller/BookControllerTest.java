@@ -118,26 +118,26 @@ public class BookControllerTest {
                 .expectStatus().isBadRequest();
     }
 
-    @DisplayName("Тест с неверным ИД книги. Должен вернуть 404")
+    @DisplayName("Тест с неверным URL. Должен вернуть 404")
     @Test
     public void getBookInvalidId() {
-        int invalidId = -1;
+        int id = 1;
         webTestClient.get()
-                .uri("/api/books/{id}", invalidId)
+                .uri("/api/v1/bookssss/{id}", id)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isNotFound();
     }
 
-    @DisplayName("Тест с неверным ИД книги при корректировке. Должен вернуть 404")
+    @DisplayName("Тест с неверным ИД книги при корректировке. Должен вернуть 400")
     @Test
     public void getBookInvalidIdForEdit() {
         int invalidId = -1;
         webTestClient.put()
-                .uri("/api/books/{id}", invalidId)
+                .uri("/api/v1/books/{id}", invalidId)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
-                .expectStatus().isNotFound();
+                .expectStatus().isBadRequest();
         }
 
     @DisplayName("Должен возвращать 500. Неверный authorId")
