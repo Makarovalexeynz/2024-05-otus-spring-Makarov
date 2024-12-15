@@ -10,7 +10,7 @@ import ru.makarov.repositories.UserRepository;
 
 @Service
 @RequiredArgsConstructor
-public class MyUserDetailsService implements UserDetailsService {
+public class LibraryUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
